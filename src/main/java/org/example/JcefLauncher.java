@@ -50,7 +50,7 @@ public class JcefLauncher {
         // Create a CefBrowser instance
         CefBrowser browser = client.createBrowser(this.url, false, false);
 
-        final ContextMenuHandler contextMenuHandler = new ContextMenuHandler(browser.getDevTools(), this.url);
+        final ContextMenuHandler contextMenuHandler = new ContextMenuHandler(browser, this.url);
         client.addContextMenuHandler(contextMenuHandler);
 
         client.addDisplayHandler(new CefDisplayHandlerAdapter() {

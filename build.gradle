@@ -11,7 +11,14 @@ repositories {
 
 dependencies {
     implementation 'me.friwi:jcefmaven:116.0.19'
-    implementation 'me.friwi:jcef-natives-windows-amd64:jcef-37f25dc+cef-116.0.19+gc6a20bc+chromium-116.0.5845.141'
+    switch (System.getProperty('os.name').toLowerCase().split()[0]) {
+        case 'windows':
+            implementation 'me.friwi:jcef-natives-windows-amd64:jcef-37f25dc+cef-116.0.19+gc6a20bc+chromium-116.0.5845.141'
+            break
+        case 'linux':
+            implementation 'me.friwi:jcef-natives-linux-amd64:jcef-37f25dc+cef-116.0.19+gc6a20bc+chromium-116.0.5845.141'
+    }
+    implementation 'me.friwi:jcef-natives-linux-amd64:jcef-37f25dc+cef-116.0.19+gc6a20bc+chromium-116.0.5845.141'
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

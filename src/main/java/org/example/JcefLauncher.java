@@ -8,20 +8,16 @@ import org.cef.CefClient;
 import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
-import org.cef.handler.CefDisplayHandler;
 import org.cef.handler.CefDisplayHandlerAdapter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 public class JcefLauncher {
     String url;
-    Timer timer;
     CefApp app;
 
     public JcefLauncher(String url) {
@@ -56,7 +52,9 @@ public class JcefLauncher {
         client.addDisplayHandler(new CefDisplayHandlerAdapter() {
             @Override
             public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
-                contextMenuHandler.setUrl(url);
+                if (!url.startsWith("devtools://")) {
+                    contextMenuHandler.setUrl(url);
+                }
             }
 
             @Override
@@ -70,28 +68,6 @@ public class JcefLauncher {
         frame.setSize(1260, 700);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.getContentPane().add(browser.getUIComponent(), BorderLayout.CENTER);
-//        frame.addComponentListener(new ComponentAdapter() {
-//
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//                int w = frame.getWidth();
-//                int h = frame.getHeight();
-//                if (w < 1260 && h < 700) {
-//                    if (timer == null) {
-//                        timer = new Timer(100, (ActionListener) -> {
-//                            timer.stop();
-//                            timer = null;
-//                            frame.setSize(new Dimension(1260, 700));
-//                            frame.repaint();
-//                            frame.revalidate();
-//                        });
-//                        timer.start();
-//                    } else {
-//                        timer.restart();
-//                    }
-//                }
-//            }
-//        });
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -101,17 +77,6 @@ public class JcefLauncher {
                 System.exit(0);
             }
         });
-        while (true) {
-            try {
-                Thread.sleep(30000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (!frame.isVisible()){
-                app.dispose();
-                System.out.println("System exiting");
-                System.exit(0);
-            }
-        }
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

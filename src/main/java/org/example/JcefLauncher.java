@@ -9,6 +9,7 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefDisplayHandlerAdapter;
+import org.cef.handler.CefLoadHandlerAdapter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class JcefLauncher {
     String url;
     CefApp app;
+    public static volatile boolean exit = false;
 
     public JcefLauncher(String url) {
         this.url = url;
@@ -59,7 +61,22 @@ public class JcefLauncher {
 
             @Override
             public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level, String message, String source, int line){
+                if (message.equals("Command:shut-down")) {
+                    JcefLauncher.exit = true;
+                }
                 return true;
+            }
+        });
+
+        client.addLoadHandler(new CefLoadHandlerAdapter() {
+            @Override
+            public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
+                super.onLoadEnd(browser, frame, httpStatusCode);
+                browser.executeJavaScript(
+                        "var customEvent = new Event('onWindowClose')",
+                        frame.getURL(),
+                        0
+                );
             }
         });
 
@@ -72,11 +89,18 @@ public class JcefLauncher {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                app.dispose();
-                System.out.println("System exiting");
-                System.exit(0);
+                browser.executeJavaScript(
+                        "document.dispatchEvent(customEvent);",
+                        browser.getFocusedFrame().getURL(),
+                        1
+                );
             }
         });
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        System.out.println("Waiting for command");
+        while(!JcefLauncher.exit);
+        app.dispose();
+        System.out.println("System exiting");
+        System.exit(0);
     }
 }

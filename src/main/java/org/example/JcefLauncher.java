@@ -8,7 +8,9 @@ import org.cef.CefClient;
 import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
+import org.cef.browser.CefMessageRouter;
 import org.cef.handler.CefDisplayHandlerAdapter;
+import org.cef.handler.CefLifeSpanHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 
 import javax.swing.*;
@@ -61,9 +63,6 @@ public class JcefLauncher {
 
             @Override
             public boolean onConsoleMessage(CefBrowser browser, CefSettings.LogSeverity level, String message, String source, int line){
-                if (message.equals("Command:shut-down")) {
-                    JcefLauncher.exit = true;
-                }
                 return true;
             }
         });
@@ -79,6 +78,13 @@ public class JcefLauncher {
                 );
             }
         });
+        client.addLifeSpanHandler(new CefLifeSpanHandlerAdapter() {@Override
+            public boolean doClose(CefBrowser browser) {
+                System.out.println("Do close called");
+                exit = true;
+                return false;
+            }
+        });
 
         // Create a JFrame to host the browser
         JFrame frame = new JFrame("Time Table Scheduler");
@@ -92,12 +98,12 @@ public class JcefLauncher {
                 browser.executeJavaScript(
                         "document.dispatchEvent(customEvent);",
                         browser.getFocusedFrame().getURL(),
-                        1
+                        0
                 );
             }
         });
+        CefMessageRouter.CefMessageRouterConfig s = new CefMessageRouter.CefMessageRouterConfig();
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        System.out.println("Waiting for command");
         while(!JcefLauncher.exit);
         app.dispose();
         System.out.println("System exiting");

@@ -96,7 +96,7 @@ public class JcefLauncher {
             @Override
             public void windowClosing(WindowEvent e) {
                 browser.executeJavaScript(
-                        "document.dispatchEvent(customEvent);",
+                        "window.dispatchEvent(customEvent);",
                         browser.getFocusedFrame().getURL(),
                         0
                 );

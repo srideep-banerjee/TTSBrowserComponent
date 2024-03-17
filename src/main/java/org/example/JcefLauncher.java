@@ -73,7 +73,7 @@ public class JcefLauncher {
             public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                 super.onLoadEnd(browser, frame, httpStatusCode);
                 browser.executeJavaScript(
-                        "var customEvent = new Event('onWindowClose')",
+                        "var customEvent = new Event('windowclose')",
                         frame.getURL(),
                         0
                 );

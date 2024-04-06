@@ -22,10 +22,12 @@ import java.io.IOException;
 public class JcefLauncher {
     String url;
     CefApp app;
+    String token;
     public static volatile boolean exit = false;
 
-    public JcefLauncher(String url) {
+    public JcefLauncher(String url, String token) {
         this.url = url;
+        this.token = token;
     }
 
     public void launch() {
@@ -72,7 +74,7 @@ public class JcefLauncher {
             public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                 super.onLoadEnd(browser, frame, httpStatusCode);
                 browser.executeJavaScript(
-                        "var customEvent = new Event('windowclose')",
+                        "var customEvent = new Event('windowclose');window.apiToken = \""+token+"\"",
                         frame.getURL(),
                         0
                 );

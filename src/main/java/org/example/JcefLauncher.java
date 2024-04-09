@@ -13,10 +13,12 @@ import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLifeSpanHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 
 public class JcefLauncher {
@@ -90,6 +92,11 @@ public class JcefLauncher {
 
         // Create a JFrame to host the browser
         JFrame frame = new JFrame("Time Table Scheduler");
+        try {
+            frame.setIconImage(ImageIO.read(new File("web\\timetableicon.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         frame.setSize(1260, 700);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.getContentPane().add(browser.getUIComponent(), BorderLayout.CENTER);

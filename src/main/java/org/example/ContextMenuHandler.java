@@ -32,14 +32,6 @@ public class ContextMenuHandler extends CefContextMenuHandlerAdapter {
         // Add a custom menu item
         model.addItem(RELOAD, "Reload");
         model.setEnabled(RELOAD, true);
-
-        model.addSeparator();
-
-        model.addItem(INSPECT, "Inspect");
-        model.setEnabled(INSPECT, true);
-
-        model.addItem(OPEN_IN_BROWSER, "Open in browser");
-        model.setEnabled(OPEN_IN_BROWSER, true);
     }
 
     @Override

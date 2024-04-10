@@ -11,7 +11,9 @@ import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefLifeSpanHandlerAdapter;
+import org.cef.handler.CefLoadHandler;
 import org.cef.handler.CefLoadHandlerAdapter;
+import org.cef.network.CefRequest;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -72,11 +74,34 @@ public class JcefLauncher {
         });
 
         client.addLoadHandler(new CefLoadHandlerAdapter() {
+
+            @Override
+            public void onLoadStart(CefBrowser browser, CefFrame frame, CefRequest.TransitionType transitionType) {
+                super.onLoadStart(browser, frame, transitionType);
+                if (transitionType == CefRequest.TransitionType.TT_RELOAD) {
+                    browser.executeJavaScript(
+                            "window.apiToken = \""+token+"\"",
+                            frame.getURL(),
+                            0
+                    );
+                }
+            }
+
             @Override
             public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                 super.onLoadEnd(browser, frame, httpStatusCode);
                 browser.executeJavaScript(
                         "var customEvent = new Event('windowclose');window.apiToken = \""+token+"\"",
+                        frame.getURL(),
+                        0
+                );
+            }
+
+            @Override
+            public void onLoadError(CefBrowser browser, CefFrame frame, CefLoadHandler.ErrorCode errorCode, String errorText, String failedUrl) {
+                super.onLoadError(browser, frame, errorCode, errorText, failedUrl);
+                browser.executeJavaScript(
+                        "window.apiToken = \""+token+"\"",
                         frame.getURL(),
                         0
                 );

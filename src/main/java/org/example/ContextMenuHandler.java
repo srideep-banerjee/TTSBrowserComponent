@@ -9,8 +9,6 @@ import java.awt.*;
 import java.net.URI;
 
 public class ContextMenuHandler extends CefContextMenuHandlerAdapter {
-    private final int INSPECT = 1;
-    private final int OPEN_IN_BROWSER = 2;
     private final int RELOAD = 3;
     String url;
     private CefBrowser devTools;
@@ -42,26 +40,6 @@ public class ContextMenuHandler extends CefContextMenuHandlerAdapter {
         switch (commandId) {
             case RELOAD -> {
                 browser.reload();
-                return true;
-            }
-            case INSPECT -> {
-                /*try {
-                    Desktop.getDesktop().browse(new URI(jcefLauncher.url));
-                } catch (Exception e) {
-                    System.out.println(e);
-                    return false;
-                }
-                return true;*/
-                SingletonDevTools.getInstance().launch(devTools);
-                return true;
-            }
-            case OPEN_IN_BROWSER -> {
-                try {
-                    Desktop.getDesktop().browse(new URI(url));
-                } catch (Exception e) {
-                    System.out.println(e);
-                    return false;
-                }
                 return true;
             }
         }

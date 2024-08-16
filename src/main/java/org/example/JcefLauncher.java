@@ -111,7 +111,7 @@ public class JcefLauncher {
             public boolean doClose(CefBrowser browser) {
                 System.out.println("Do close called");
                 exit = true;
-                return false;
+                return true;
             }
         });
 
@@ -136,10 +136,10 @@ public class JcefLauncher {
                 );
             }
         });
-        CefMessageRouter.CefMessageRouterConfig s = new CefMessageRouter.CefMessageRouterConfig();
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         while(!JcefLauncher.exit);
         app.dispose();
+        frame.dispose();
         System.out.println("System exiting");
         System.exit(0);
     }

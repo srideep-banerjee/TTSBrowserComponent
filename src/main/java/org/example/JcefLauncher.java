@@ -9,10 +9,10 @@ import org.cef.CefSettings;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
-import org.cef.handler.CefDisplayHandlerAdapter;
-import org.cef.handler.CefLifeSpanHandlerAdapter;
-import org.cef.handler.CefLoadHandler;
-import org.cef.handler.CefLoadHandlerAdapter;
+import org.cef.callback.CefBeforeDownloadCallback;
+import org.cef.callback.CefDownloadItem;
+import org.cef.callback.CefDownloadItemCallback;
+import org.cef.handler.*;
 import org.cef.network.CefRequest;
 
 import javax.imageio.ImageIO;
@@ -73,6 +73,13 @@ public class JcefLauncher {
             }
         });
 
+        client.addDownloadHandler(new CefDownloadHandlerAdapter() {
+            @Override
+            public void onBeforeDownload(CefBrowser browser, CefDownloadItem downloadItem, String suggestedName, CefBeforeDownloadCallback callback) {
+                callback.Continue(null, true);
+            }
+        });
+
         client.addLoadHandler(new CefLoadHandlerAdapter() {
 
             @Override
@@ -90,8 +97,12 @@ public class JcefLauncher {
             @Override
             public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
                 super.onLoadEnd(browser, frame, httpStatusCode);
+                StringBuilder loadJs = new StringBuilder()
+                        .append("var closeEvent = new Event('windowclose');")
+                        .append("var downloadEvent = new Event('downloadprogress');")
+                        .append("window.apiToken = '").append(token).append("'");
                 browser.executeJavaScript(
-                        "var customEvent = new Event('windowclose');window.apiToken = \""+token+"\"",
+                        loadJs.toString(),
                         frame.getURL(),
                         0
                 );
@@ -130,7 +141,7 @@ public class JcefLauncher {
             @Override
             public void windowClosing(WindowEvent e) {
                 browser.executeJavaScript(
-                        "window.dispatchEvent(customEvent);",
+                        "window.dispatchEvent(closeEvent);",
                         browser.getFocusedFrame().getURL(),
                         0
                 );
